@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MUVI.bot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .chat-container {
+      width: 400px;
+      max-width: 95%;
+      background: #1e1e1e;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .chat-box {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+    }
+
+    .message {
+      margin: 8px 0;
+      padding: 10px 15px;
+      border-radius: 12px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .bot {
+      background: #333;
+      align-self: flex-start;
+    }
+
+    .user {
+      background: #0078ff;
+      align-self: flex-end;
+    }
+
+    .input-area {
+      display: flex;
+      border-top: 1px solid #444;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      outline: none;
+      background: #121212;
+      color: #fff;
+    }
+
+    button {
+      padding: 12px 20px;
+      border: none;
+      background: #0078ff;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #005fcc;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="chat-box" id="chatBox">
+      <div class="message bot">🎬 Hi! I’m MUVIBOT. Do you want **Hollywood** or **Bollywood** movie suggestions?</div>
+    </div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Type Hollywood or Bollywood...">
+      <button onclick="sendMessage()">Send</button>
+    </div>
+  </div>
+
+  <script>
+    const movies = {
+      hollywood: {
+        action: ["Mad Max: Fury Road", "John Wick", "The Dark Knight", "Die Hard"],
+        comedy: ["Superbad", "Step Brothers", "The Grand Budapest Hotel", "Bridesmaids"],
+        drama: ["The Shawshank Redemption", "Fight Club", "Forrest Gump", "Whiplash"],
+        "sci-fi": ["Inception", "The Matrix", "Interstellar", "Arrival"],
+        romance: ["La La Land", "Pride & Prejudice", "Titanic", "Her"]
+      },
+      bollywood: {
+        action: ["War", "Dhoom 2", "Krrish", "Singham"],
+        comedy: ["3 Idiots", "Munna Bhai M.B.B.S.", "Hera Pheri", "Golmaal"],
+        drama: ["Gully Boy", "Taare Zameen Par", "Lagaan", "Swades"],
+        romance: ["Dilwale Dulhania Le Jayenge", "Jab We Met", "Veer-Zaara", "Kal Ho Naa Ho"],
+        thriller: ["Andhadhun", "Drishyam", "Kahaani", "Talaash"]
+      }
+    };
+
+    let selectedIndustry = null; 
+
+    const chatBox = document.getElementById("chatBox");
+    const userInput = document.getElementById("userInput");
+
+    function addMessage(text, sender) {
+      const message = document.createElement("div");
+      message.classList.add("message", sender);
+      message.innerText = text;
+      chatBox.appendChild(message);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function suggestMovie(industry, genre) {
+      genre = genre.toLowerCase();
+      if (movies[industry] && movies[industry][genre]) {
+        const randomMovie = movies[industry][genre][Math.floor(Math.random() * movies[industry][genre].length)];
+        return `👉 How about watching: ${randomMovie}?`;
+      } else {
+        return "😅 o I see, you need something else. Ask again (Action, Comedy, Drama, Sci-Fi, Romance)? ";
+      }
+    }
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+      addMessage(text, "user");
+
+      if (!selectedIndustry) {
+        if (text.toLowerCase().includes("hollywood")) {
+          selectedIndustry = "hollywood";
+          setTimeout(() => addMessage("Great! What genre? (Action, Comedy, Drama, Sci-Fi, Romance)", "bot"), 500);
+        } else if (text.toLowerCase().includes("bollywood")) {
+          selectedIndustry = "bollywood";
+          setTimeout(() => addMessage("Awesome! What genre? (Action, Comedy, Drama, Romance, Thriller)", "bot"), 500);
+        } else {
+          setTimeout(() => addMessage("Please type either 'Hollywood' or 'Bollywood' 🎥", "bot"), 500);
+        }
+      }
+   
+      else {
+        const reply = suggestMovie(selectedIndustry, text);
+        setTimeout(() => addMessage(reply, "bot"), 500);
+      }
+
+      userInput.value = "";
+    }
+
+    userInput.addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        sendMessage();
+      }
+    });
+
+  
+  </script>
+  
+  
+</body>
+</html>
